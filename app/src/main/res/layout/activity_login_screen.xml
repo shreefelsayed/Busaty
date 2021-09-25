@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".LoginScreen">
+
+    <ImageView
+        android:id="@+id/imgBuses"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_300sdp"
+        android:alpha="0.8"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/buses" />
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_140sdp"
+        android:padding="@dimen/_20sdp"
+        android:scaleType="fitCenter"
+        android:background="@drawable/rounded_corner_top"
+        app:layout_constraintBottom_toBottomOf="@+id/imgBuses"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgBuses"
+        app:srcCompat="@drawable/ic_logo" />
+
+    <LinearLayout
+        android:id="@+id/linInfo"
+        android:padding="@dimen/_8sdp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgLogo">
+
+        <TextView
+            android:textSize="@dimen/_18sdp"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="تسجيل الدخول" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/btnNext"
+                android:layout_width="@dimen/_64sdp"
+                android:layout_height="@dimen/_64sdp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/colorAccent"
+                app:cb_color="@color/colorPrimary"
+                app:cb_pressedRingWidth="16dip" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tlPhone"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="رقم الهاتف"
+                android:textColorHint="@color/colorAccent"
+                app:endIconMode="none"
+                app:errorTextAppearance="@style/error"
+                tools:ignore="HardcodedText">
+
+                <EditText
+                    android:id="@+id/txtPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="12dp"
+                    android:ems="10"
+                    android:fontFamily="@font/_markazi"
+                    android:importantForAutofill="no"
+                    android:inputType="phone"
+                    android:paddingRight="12dp"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/_14sdp"
+                    tools:ignore="LabelFor,RtlHardcoded,RtlSymmetry" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+
+        <TextView
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/colorGrey"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="طرق اخري لتسجيل الدخول"
+            android:layout_marginBottom="@dimen/_5sdp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/btnGoogle"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_google"
+                android:tint="@color/colorAccent"
+                app:cb_color="@color/colorPrimary"
+                app:cb_pressedRingWidth="8dip" />
+
+            <at.markushi.ui.CircleButton
+                android:id="@+id/btnFacebook"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_facebook"
+                android:tint="@color/colorAccent"
+                app:cb_color="@color/colorPrimary"
+                app:cb_pressedRingWidth="8dip" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
