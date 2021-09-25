@@ -7,14 +7,23 @@ import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+
+import com.armjld.busaty.ActionClasses.RouteActions;
 import com.armjld.busaty.R;
 import com.armjld.busaty.Utill.Route;
+import com.armjld.busaty.Utill.UserInFormation;
 import com.armjld.busaty.Utill.Validity;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+
+import Models.Routes;
 import Models.Stops;
 import at.markushi.ui.CircleButton;
 import es.dmoral.toasty.Toasty;
@@ -80,6 +89,21 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void saveRoute() {
+        Routes routes = new Routes(txtCode.getText().toString().trim(),
+                getDate(),
+                UserInFormation.getUser().getId()
+                ,Integer.parseInt(txtMoney.getText().toString().trim()));
+
+        RouteActions routeActions = new RouteActions();
+        routeActions.addRoute(routes, listStops);
+
+        Toasty.success(this, "Route Added Successfully", Toasty.LENGTH_LONG, true).show();
+        finish();
+    }
+
+    private String getDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.ENGLISH);
+        return sdf.format(new Date());
     }
 
     private void showPrev() {

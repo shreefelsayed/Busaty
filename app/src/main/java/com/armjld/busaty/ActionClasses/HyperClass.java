@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.armjld.busaty.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hypertrack.sdk.HyperTrack;
@@ -22,7 +23,7 @@ public class HyperClass implements TrackingStateObserver.OnTrackingStateChangeLi
 
     Context mContext;
     HyperTrack sdkInstance;
-    String htID = "LBhYWpkf10uvRXNudlD9xfGkn2Gg-6dPWA5IhDt8TjOa3ZN8hqxGIOodZaS7RjxSjqoi8gIyNR6-_5HaxxmzPQ";
+    String htID = String.valueOf(R.string.hypertrack);
     DatabaseReference uDatabase = FirebaseDatabase.getInstance().getReference().child("users");
 
 

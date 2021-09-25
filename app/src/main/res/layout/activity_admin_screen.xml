@@ -24,16 +24,24 @@
 
         <TextView
             android:id="@+id/allStops"
+            android:layout_marginTop="@dimen/_10sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="All The Stops" />
+            android:text="All Stops" />
 
         <TextView
             android:id="@+id/newRoute"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Stops" />
+            android:text="Add Route" />
+
+        <TextView
+            android:id="@+id/allRoutes"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="All Routes" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

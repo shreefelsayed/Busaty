@@ -24,9 +24,9 @@
 
     <ViewFlipper
         android:id="@+id/viewFlipper"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_marginTop="@dimen/_60sdp"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:inAnimation="@android:anim/fade_in"
         android:outAnimation="@android:anim/fade_out"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,26 +34,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/linMain"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center|top"
-            android:orientation="vertical"
-            android:padding="@dimen/_20sdp">
 
-            <TextView
+       <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="بيانات الخط"
-                android:textColor="@color/colorAccent"
-                android:textSize="@dimen/_18sdp" />
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center|top"
+                android:orientation="vertical"
+                android:padding="@dimen/_20sdp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="بيانات الخط"
+                    android:textColor="@color/colorAccent"
+                    android:textSize="@dimen/_18sdp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tlCode"
@@ -61,61 +56,50 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    android:layout_weight="1"
                     android:hint="رقم الخط"
                     android:textColorHint="@color/colorAccent"
                     app:endIconMode="none"
-                    app:errorTextAppearance="@style/error"
-                    tools:ignore="HardcodedText">
+                    app:errorTextAppearance="@style/error">
 
                     <EditText
                         android:id="@+id/txtCode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:drawablePadding="12dp"
                         android:ems="10"
                         android:fontFamily="@font/_markazi"
                         android:importantForAutofill="no"
                         android:inputType="textPersonName"
-                        android:paddingRight="12dp"
                         android:textColor="@color/colorAccent"
-                        android:textSize="@dimen/_14sdp"
-                        tools:ignore="LabelFor,RtlHardcoded,RtlSymmetry,SpeakableTextPresentCheck" />
+                        android:textSize="@dimen/_14sdp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tlMoney"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:layout_weight="1"
-                    android:hint="سعر التذكره"
-                    android:textColorHint="@color/colorAccent"
-                    app:endIconMode="none"
-                    app:errorTextAppearance="@style/error"
-                    tools:ignore="HardcodedText">
+           <com.google.android.material.textfield.TextInputLayout
+               android:id="@+id/tlMoney"
+               style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginBottom="20dp"
+               android:hint="سعر التزكره"
+               android:textColorHint="@color/colorAccent"
+               app:endIconMode="none"
+               app:errorTextAppearance="@style/error">
 
-                    <EditText
-                        android:id="@+id/txtMoney"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:drawablePadding="12dp"
-                        android:ems="10"
-                        android:fontFamily="@font/_markazi"
-                        android:importantForAutofill="no"
-                        android:inputType="number"
-                        android:paddingRight="12dp"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="@dimen/_14sdp"
-                        tools:ignore="LabelFor,RtlHardcoded,RtlSymmetry,SpeakableTextPresentCheck" />
-                </com.google.android.material.textfield.TextInputLayout>
+               <EditText
+                   android:id="@+id/txtMoney"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:ems="10"
+                   android:fontFamily="@font/_markazi"
+                   android:importantForAutofill="no"
+                   android:inputType="number"
+                   android:textColor="@color/colorAccent"
+                   android:textSize="@dimen/_14sdp"/>
+           </com.google.android.material.textfield.TextInputLayout>
 
-            </LinearLayout>
-        </LinearLayout>
+       </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/linEmail"
+            android:id="@+id/linMainStops"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"

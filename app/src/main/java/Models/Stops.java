@@ -7,6 +7,7 @@ public class Stops {
     String _long = "";
     String date = "";
     String by = "";
+    int numb = 0;
 
     public Stops() {}
 
@@ -17,6 +18,14 @@ public class Stops {
         this._long = _long;
         this.date = date;
         this.by = by;
+    }
+
+    public int getNumb() {
+        return numb;
+    }
+
+    public void setNumb(int numb) {
+        this.numb = numb;
     }
 
     public String getCode() {

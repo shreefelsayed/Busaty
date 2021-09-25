@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -30,6 +29,7 @@ import com.armjld.busaty.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,12 +39,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.textfield.TextInputLayout;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Arrays;
+import java.util.Locale;
 import at.markushi.ui.CircleButton;
 import es.dmoral.toasty.Toasty;
 
@@ -71,14 +72,24 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
     EditText txtName;
     TextInputLayout tlName;
 
+    AutocompleteSupportFragment placeAutoComplete;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_stop);
 
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key), Locale.US);
+        }
+
         permisionActions = new PermisionActions(this);
         geocoder = new Geocoder(this);
+        placeAutoComplete = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placeAutoComplete);
+        assert placeAutoComplete != null;
+        placeAutoComplete.getView().setBackgroundResource(R.drawable.layout_rounded_corner);
+        placeAutoComplete.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
 
         viewFlipper = findViewById(R.id.viewFlipper);
         txtName = findViewById(R.id.txtName);
@@ -100,22 +111,23 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
 
         linSearchResult.setVisibility(View.GONE);
 
+        // Set up a PlaceSelectionListener to handle the response.
+        placeAutoComplete.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                updateUI(place);
+            }
+
+            @Override
+            public void onError(@NonNull Status status) {
+
+            }
+        });
+
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         buildGoogleAPIClient();
-        txtSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                updateUI();
-            }
-        });
 
         txtName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -164,36 +176,12 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
     }
 
 
-    private void updateUI() {
-        if (txtSearch.getText().toString().trim().isEmpty()) {
-            linSearchResult.setVisibility(View.GONE);
-            return;
-        }
-
-        ArrayList<Address> listResults = null;
-        try {
-            listResults = SearchForLoc(txtSearch.getText().toString().trim());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        locationsAdapter = new LocationsAdapter(this, listResults, mMap,stopLocation);
-        recycler.setAdapter(locationsAdapter);
-        linSearchResult.setVisibility(View.VISIBLE);
-    }
-
-    private ArrayList<Address> SearchForLoc(String strSearch) throws IOException {
-        ArrayList<Address> address = new ArrayList<>();
-
-        List<Address> listAd = geocoder.getFromLocationName(strSearch, 5);
-        for (int i = 0; i < listAd.size(); i++) {
-            Address ar = listAd.get(i);
-            if (ar.getCountryName().equals("EG")) {
-                address.add(ar);
-            }
-        }
-
-        return address;
+    private void updateUI(Place place) {
+        mMap.clear();
+        stopLocation = place.getLatLng();
+        mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
     }
 
     @Override
@@ -269,7 +257,7 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
         stopLocation = latLng;
         mMap.addMarker(new MarkerOptions().position(latLng));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
     private void buildGoogleAPIClient() {

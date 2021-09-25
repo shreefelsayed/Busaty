@@ -9,7 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
-import com.armjld.busaty.DirectionsJSONParser;
+
 import com.armjld.busaty.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -92,7 +92,7 @@ public class Route {
         }
 
         urlString.append("&sensor=false&mode=driving");
-        urlString.append("&key=AIzaSyABltNgVNN4rCCXXGDoBIZE20D91Ry9XDI");
+        urlString.append("&key=" + mContext.getResources().getString(R.string.google_maps_key));
 
         return urlString.toString();
     }
@@ -106,8 +106,8 @@ public class Route {
             String data = "";
             try {
                 data = downloadUrl(url[0]);
-            } catch (Exception e) {
-
+            } catch (Exception ignored) {
+                ignored.printStackTrace();
             }
             return data;
         }
@@ -139,6 +139,7 @@ public class Route {
             return routes;
         }
 
+        @SuppressLint("LogNotTimber")
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList points;
@@ -190,6 +191,7 @@ public class Route {
         }
     }
 
+    @SuppressLint("LogNotTimber")
     private String downloadUrl(String strUrl) throws IOException {
         String data = "";
         InputStream iStream = null;
@@ -205,9 +207,9 @@ public class Route {
 
             BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
 
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line);
             }
@@ -220,6 +222,7 @@ public class Route {
         } catch (Exception e) {
             Log.i("Route", "Route Error : " + e.toString());
         } finally {
+            assert iStream != null;
             iStream.close();
             urlConnection.disconnect();
         }
@@ -228,6 +231,7 @@ public class Route {
 
     private BitmapDescriptor bitmapDescriptorFromVector() {
         Drawable vectorDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_bus_stop);
+        assert vectorDrawable != null;
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);

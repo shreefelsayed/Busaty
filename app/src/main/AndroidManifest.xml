@@ -63,6 +63,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Busaty">
         <activity
+            android:name=".Admin.Routes.RoutesActivity"
+            android:exported="true" />
+        <activity
             android:name=".Admin.AdminRoutes.ChooseStop"
             android:exported="true" />
         <activity

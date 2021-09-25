@@ -11,11 +11,12 @@ import android.widget.Toast;
 import com.armjld.busaty.Admin.AdminRoutes.NewRoute;
 import com.armjld.busaty.Admin.NewStops.AddStop;
 import com.armjld.busaty.Admin.NewStops.StopsActivity;
+import com.armjld.busaty.Admin.Routes.RoutesActivity;
 import com.armjld.busaty.R;
 
 public class AdminScreen extends AppCompatActivity {
 
-    TextView addStops, allStops, newRoute;
+    TextView addStops, allStops, newRoute,allRoutes;
     boolean doubleBackToExitPressedOnce = false;
 
     @Override
@@ -38,17 +39,14 @@ public class AdminScreen extends AppCompatActivity {
         addStops = findViewById(R.id.addStops);
         allStops = findViewById(R.id.allStops);
         newRoute = findViewById(R.id.newRoute);
+        allRoutes = findViewById(R.id.allRoutes);
 
-        allStops.setOnClickListener(v-> {
-            startActivity(new Intent(this, StopsActivity.class));
-        });
+        allRoutes.setOnClickListener(v-> startActivity(new Intent(this, RoutesActivity.class)));
 
-        newRoute.setOnClickListener(v-> {
-            startActivity(new Intent(this, NewRoute.class));
-        });
+        allStops.setOnClickListener(v-> startActivity(new Intent(this, StopsActivity.class)));
 
-        addStops.setOnClickListener(v-> {
-            startActivity(new Intent(this, AddStop.class));
-        });
+        newRoute.setOnClickListener(v-> startActivity(new Intent(this, NewRoute.class)));
+
+        addStops.setOnClickListener(v-> startActivity(new Intent(this, AddStop.class)));
     }
 }
