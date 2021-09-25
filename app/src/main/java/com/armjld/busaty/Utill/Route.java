@@ -1,102 +1,75 @@
 package com.armjld.busaty.Utill;
 
-// -- This class is to draw a route on Google Maps;
-
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.util.Log;
-
+import androidx.core.content.ContextCompat;
+import com.armjld.busaty.DirectionsJSONParser;
+import com.armjld.busaty.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import Models.Stops;
 
 public class Route {
+    GoogleMap mMap;
+    Context mContext;
 
-    public void setRoute(GoogleMap mMap, ArrayList<Stops> listStops) {
+    public Route(GoogleMap mMap, Context mContext) {
+        this.mMap = mMap;
+        this.mContext = mContext;
+    }
+
+    public void setRoute(ArrayList<Stops> listStops) {
         if(listStops.size() > 1) {
             String url = makeURL(listStops);
-            drawPath(url, mMap);
+            DownloadTask downloadTask = new DownloadTask();
+            downloadTask.execute(url);
         }
+        setPoints(listStops);
     }
 
-    @SuppressLint("LogNotTimber")
-    public void drawPath(String result, GoogleMap mMap) {
-        try {
-            //Tranform the string into a json object
-            Log.i("Routes", "Route Link : " + result);
-            JSONObject json = new JSONObject("{" + result + "}");
-            JSONArray routeArray = json.getJSONArray("routes");
-            JSONObject routes = routeArray.getJSONObject(0);
-            JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
-            String encodedString = overviewPolylines.getString("points");
-            List<LatLng> list = decodePoly(encodedString);
+    private void setPoints(ArrayList<Stops> listStops) {
+        for(int i = 0; i < listStops.size(); i ++) {
+            Stops stops = listStops.get(i);
+            LatLng latLng = new LatLng(Double.parseDouble(stops.getLat()), Double.parseDouble(stops.get_long()));
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).icon(bitmapDescriptorFromVector()).draggable(false).flat(true);
 
-            mMap.addPolyline(new PolylineOptions()
-                    .addAll(list)
-                    .width(12)
-                    .color(Color.parseColor("#05b1fb"))//Google maps blue color
-                    .geodesic(true)
-            );
-
-        } catch (JSONException e) {
-            Log.i("Route", "Error in Route : " + e.toString());
+            mMap.addMarker(markerOptions);
         }
-    }
-
-    private List<LatLng> decodePoly(String encoded) {
-
-        List<LatLng> poly = new ArrayList<LatLng>();
-        int index = 0, len = encoded.length();
-        int lat = 0, lng = 0;
-
-        while (index < len) {
-            int b, shift = 0, result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lat += dlat;
-
-            shift = 0;
-            result = 0;
-            do {
-                b = encoded.charAt(index++) - 63;
-                result |= (b & 0x1f) << shift;
-                shift += 5;
-            } while (b >= 0x20);
-            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-            lng += dlng;
-
-            LatLng p = new LatLng((((double) lat / 1E5)),
-                    (((double) lng / 1E5)));
-            poly.add(p);
-        }
-
-        return poly;
     }
 
     private String makeURL (ArrayList<Stops> points){
         StringBuilder urlString = new StringBuilder();
 
-
-        urlString.append("https://maps.googleapis.com/maps/api/directions/json");
-        urlString.append("?origin=");// from
+        urlString.append("https://maps.googleapis.com/maps/api/directions/json?");
+        urlString.append("origin=");// from
         urlString.append(points.get(0).getLat());
         urlString.append(',');
         urlString.append(points.get(0).get_long());
+
         urlString.append("&destination=");
         urlString.append(points.get(points.size()-1).getLat());
         urlString.append(',');
@@ -121,7 +94,144 @@ public class Route {
         urlString.append("&sensor=false&mode=driving");
         urlString.append("&key=AIzaSyABltNgVNN4rCCXXGDoBIZE20D91Ry9XDI");
 
-
         return urlString.toString();
+    }
+
+
+    @SuppressLint("StaticFieldLeak")
+    private class DownloadTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... url) {
+            String data = "";
+            try {
+                data = downloadUrl(url[0]);
+            } catch (Exception e) {
+
+            }
+            return data;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+            ParserTask parserTask = new ParserTask();
+            parserTask.execute(result);
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String, String>>>> {
+        @Override
+        protected List<List<HashMap<String, String>>> doInBackground(String... jsonData) {
+
+            JSONObject jObject;
+            List<List<HashMap<String, String>>> routes = null;
+
+            try {
+                jObject = new JSONObject(jsonData[0]);
+                DirectionsJSONParser parser = new DirectionsJSONParser();
+                routes = parser.parse(jObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return routes;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
+            ArrayList points;
+            PolylineOptions lineOptions = null;
+
+            for (int i = 0; i < result.size(); i++) {
+                points = new ArrayList();
+                lineOptions = new PolylineOptions();
+
+                List<HashMap<String, String>> path = result.get(i);
+
+                for (int j = 0; j < path.size(); j++) {
+                    HashMap<String, String> point = path.get(j);
+
+                    double lat = Double.parseDouble(Objects.requireNonNull(point.get("lat")));
+                    double lng = Double.parseDouble(Objects.requireNonNull(point.get("lng")));
+                    LatLng position = new LatLng(lat, lng);
+                    points.add(position);
+                }
+
+                lineOptions.addAll(points);
+                lineOptions.width(12);
+                lineOptions.color(Color.parseColor("#CA4940"));
+                lineOptions.geodesic(true);
+
+            }
+
+            if(lineOptions != null) {
+                mMap.addPolyline(lineOptions);
+                fitPoly(lineOptions);
+                Log.i("Route", "Route Drawed");
+            } else {
+                Log.i("Route", "Draw Line : Line options are null");
+            }
+        }
+
+        private void fitPoly(PolylineOptions lineOptions) {
+            final int POLYGON_PADDING_PREFERENCE = 200;
+            final LatLngBounds latLngBounds = getPolygonLatLngBounds(lineOptions.getPoints());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
+        }
+
+        private LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
+            final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
+            for (LatLng point : polygon) {
+                centerBuilder.include(point);
+            }
+            return centerBuilder.build();
+        }
+    }
+
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.connect();
+
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+            Log.i("Route", "Route Data : " + data);
+
+        } catch (Exception e) {
+            Log.i("Route", "Route Error : " + e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
+    }
+
+    private BitmapDescriptor bitmapDescriptorFromVector() {
+        Drawable vectorDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_bus_stop);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

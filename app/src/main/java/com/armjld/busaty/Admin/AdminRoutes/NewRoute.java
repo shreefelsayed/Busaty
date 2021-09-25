@@ -5,26 +5,16 @@ import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-
 import com.armjld.busaty.R;
 import com.armjld.busaty.Utill.Route;
 import com.armjld.busaty.Utill.Validity;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import Models.Stops;
 import at.markushi.ui.CircleButton;
 import es.dmoral.toasty.Toasty;
@@ -59,13 +49,9 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
         assert mapFragment != null;
         mapFragment.getMapAsync(this);
 
-        btnNext.setOnClickListener(v-> {
-            showNext();
-        });
+        btnNext.setOnClickListener(v-> showNext());
 
-        btnBack.setOnClickListener(v-> {
-            showPrev();
-        });
+        btnBack.setOnClickListener(v-> showPrev());
 
         addRow();
     }
@@ -136,45 +122,12 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
         if(mMap == null) return;
         mMap.clear();
 
-        List<Marker> markers = new ArrayList<Marker>();
-        for(int i = 0; i < listStops.size(); i++) {
-            Stops stops = listStops.get(i);
-            LatLng latLng = new LatLng(Double.parseDouble(stops.getLat()), Double.parseDouble(stops.get_long()));
-            MarkerOptions markerOptions = new MarkerOptions().position(latLng);
-
-            Marker marker = mMap.addMarker(markerOptions);
-            markers.add(marker);
-
-            drawRoutes();
-            zoomInMarkers(markers);
-        }
+        drawRoutes();
     }
-
-    private List<LatLng> convertToLat() {
-        List<LatLng> latLangs = new ArrayList<LatLng>();
-        for(int i = 0; i < listStops.size(); i++) {
-            Stops stops = listStops.get(i);
-            LatLng latLng = new LatLng(Double.parseDouble(stops.getLat()), Double.parseDouble(stops.get_long()));
-            latLangs.add(latLng);
-        }
-
-        return latLangs;
-    }
-
 
     private void drawRoutes() {
-        Route route = new Route();
-        route.setRoute(mMap, listStops);
-    }
-
-    private void zoomInMarkers(List<Marker> markers) {
-        LatLngBounds.Builder b = new LatLngBounds.Builder();
-        for (Marker m : markers) {
-            b.include(m.getPosition());
-        }
-        LatLngBounds bounds = b.build();
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 15,15,2);
-        mMap.animateCamera(cu);
+        Route route = new Route(mMap, this);
+        route.setRoute(listStops);
     }
 
     @Override
