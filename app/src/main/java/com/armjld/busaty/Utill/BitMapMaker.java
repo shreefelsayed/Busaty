@@ -7,8 +7,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.armjld.busaty.R;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 public class BitMapMaker {
     public Bitmap createImage(int width, int height, int color, String name) {

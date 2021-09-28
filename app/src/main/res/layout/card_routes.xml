@@ -78,14 +78,41 @@
                     android:text="عدد المحطات : ٥ محطات"/>
             </LinearLayout>
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_50sdp"
+                app:cardCornerRadius="@dimen/_30sdp"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="0.5">
+                <TextView
+                    android:id="@+id/txtCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hi"
+                    android:textSize="@dimen/_18sdp"
+                    android:textColor="@color/colorWhite"
+                    android:layout_gravity="center"
+                    android:gravity="center"/>
+            </androidx.cardview.widget.CardView>
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgCode"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_60sdp"
                 android:layout_weight="0.5"
+                android:visibility="gone"
                 android:src="@color/amber_100"
                 tools:srcCompat="@tools:sample/avatars" />
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/colorGrey"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

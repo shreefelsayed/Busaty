@@ -87,6 +87,7 @@ public class LoginManager {
                             mContext.startActivity(new Intent(mContext, AdminScreen.class));
                             break;
                         case "User" :
+                            MainScreen.whichFrag = "Main";
                             mContext.startActivity(new Intent(mContext, MainScreen.class));
                             break;
                         default:

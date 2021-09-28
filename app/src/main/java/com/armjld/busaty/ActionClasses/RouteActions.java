@@ -1,12 +1,14 @@
 package com.armjld.busaty.ActionClasses;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.armjld.busaty.Adapters.RouteAdapter;
+import com.armjld.busaty.Utill.RouteData;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,8 +25,14 @@ import Models.Stops;
 
 public class RouteActions {
 
+    Context mContext;
+
     DatabaseReference sDatabase = FirebaseDatabase.getInstance().getReference().child("stops");
     DatabaseReference rDatabase = FirebaseDatabase.getInstance().getReference().child("routes");
+
+    public RouteActions(Context mContext) {
+        this.mContext = mContext;
+    }
 
     public void addRoute(Routes routes, ArrayList<Stops> listStops) {
         rDatabase.child(routes.getCode()).setValue(routes);
@@ -65,6 +73,9 @@ public class RouteActions {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     Collections.sort(routes.getListStops(), Comparator.comparingInt(Stops::getNumb));
                 }
+
+                RouteData routeData = new RouteData(routes, mContext);
+                routeData.setRoute();
 
                 if(routeAdapter != null) routeAdapter.notifyItemChanged(pos);
                 Log.i("Routes Actions", "Routes Actions : Updated");

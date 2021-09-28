@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.armjld.busaty.ActionClasses.RouteActions;
 import com.armjld.busaty.R;
-import com.armjld.busaty.Utill.Route;
+import com.armjld.busaty.Utill.RouteMaker;
 import com.armjld.busaty.Utill.UserInFormation;
 import com.armjld.busaty.Utill.Validity;
 import com.google.android.gms.maps.GoogleMap;
@@ -94,7 +94,7 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
                 UserInFormation.getUser().getId()
                 ,Integer.parseInt(txtMoney.getText().toString().trim()));
 
-        RouteActions routeActions = new RouteActions();
+        RouteActions routeActions = new RouteActions(this);
         routeActions.addRoute(routes, listStops);
 
         Toasty.success(this, "Route Added Successfully", Toasty.LENGTH_LONG, true).show();
@@ -150,7 +150,7 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
     }
 
     private void drawRoutes() {
-        Route route = new Route(mMap, this);
+        RouteMaker route = new RouteMaker(mMap, this);
         route.setRoute(listStops);
     }
 
@@ -159,5 +159,4 @@ public class NewRoute extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
-
 }

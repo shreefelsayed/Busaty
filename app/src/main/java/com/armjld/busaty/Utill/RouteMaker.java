@@ -33,16 +33,18 @@ import java.util.Objects;
 
 import Models.Stops;
 
-public class Route {
+public class RouteMaker {
     GoogleMap mMap;
     Context mContext;
 
-    public Route(GoogleMap mMap, Context mContext) {
+    public RouteMaker(GoogleMap mMap, Context mContext) {
         this.mMap = mMap;
         this.mContext = mContext;
     }
 
     public void setRoute(ArrayList<Stops> listStops) {
+        mMap.clear();
+
         if(listStops.size() > 1) {
             String url = makeURL(listStops);
             DownloadTask downloadTask = new DownloadTask();

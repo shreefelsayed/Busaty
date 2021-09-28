@@ -100,7 +100,7 @@ public class RoutesActivity extends AppCompatActivity {
 
         listRoutes.clear();
 
-        RouteActions routeActions = new RouteActions();
+        RouteActions routeActions = new RouteActions(this);
 
         rDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -130,7 +130,7 @@ public class RoutesActivity extends AppCompatActivity {
             EmptyPanel.setVisibility(View.VISIBLE);
         }
 
-        routeAdapter = new RouteAdapter(this, listRoutes);
+        routeAdapter = new RouteAdapter(this, listRoutes, null);
         recyclerView.setAdapter(routeAdapter);
     }
 }

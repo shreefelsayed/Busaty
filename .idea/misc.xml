@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable-v24/indicator_default.xml" value="0.13020833333333334" />
         <entry key="app/src/main/res/drawable-v24/indicator_selector.xml" value="0.13020833333333334" />
         <entry key="app/src/main/res/drawable/app_icon.xml" value="0.13020833333333334" />
+        <entry key="app/src/main/res/drawable/ic_pin.xml" value="0.24635416666666668" />
         <entry key="app/src/main/res/drawable/rounded_corner_top.xml" value="0.24635416666666668" />
         <entry key="app/src/main/res/layout/activity_add_stop.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_admin_screen.xml" value="0.25" />
@@ -21,7 +22,7 @@
         <entry key="app/src/main/res/layout/activity_splash_screen.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/activity_stops.xml" value="0.22666666666666666" />
         <entry key="app/src/main/res/layout/card_address.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/card_routes.xml" value="0.23020833333333332" />
+        <entry key="app/src/main/res/layout/card_routes.xml" value="0.335" />
         <entry key="app/src/main/res/layout/content_main_screen.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/fragment_main.xml" value="0.23020833333333332" />
         <entry key="app/src/main/res/layout/fragment_rides.xml" value="0.23020833333333332" />

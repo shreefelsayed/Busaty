@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.armjld.busaty.ActionClasses.LoginManager;
 import com.armjld.busaty.Admin.AdminRoutes.NewRoute;
 import com.armjld.busaty.Admin.NewStops.AddStop;
 import com.armjld.busaty.Admin.NewStops.StopsActivity;
@@ -16,7 +17,7 @@ import com.armjld.busaty.R;
 
 public class AdminScreen extends AppCompatActivity {
 
-    TextView addStops, allStops, newRoute,allRoutes;
+    TextView addStops, allStops, newRoute,allRoutes,txtSignOut;
     boolean doubleBackToExitPressedOnce = false;
 
     @Override
@@ -40,6 +41,7 @@ public class AdminScreen extends AppCompatActivity {
         allStops = findViewById(R.id.allStops);
         newRoute = findViewById(R.id.newRoute);
         allRoutes = findViewById(R.id.allRoutes);
+        txtSignOut = findViewById(R.id.txtSignOut);
 
         allRoutes.setOnClickListener(v-> startActivity(new Intent(this, RoutesActivity.class)));
 
@@ -48,5 +50,10 @@ public class AdminScreen extends AppCompatActivity {
         newRoute.setOnClickListener(v-> startActivity(new Intent(this, NewRoute.class)));
 
         addStops.setOnClickListener(v-> startActivity(new Intent(this, AddStop.class)));
+
+        txtSignOut.setOnClickListener(v-> {
+            LoginManager loginManager = new LoginManager(this);
+            loginManager.clearInfo();
+        });
     }
 }

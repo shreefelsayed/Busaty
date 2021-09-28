@@ -89,6 +89,7 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
         placeAutoComplete = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.placeAutoComplete);
         assert placeAutoComplete != null;
         placeAutoComplete.getView().setBackgroundResource(R.drawable.layout_rounded_corner);
+        placeAutoComplete.setCountry("EG");
         placeAutoComplete.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG));
 
         viewFlipper = findViewById(R.id.viewFlipper);
@@ -181,7 +182,8 @@ public class AddStop extends FragmentActivity implements OnMapReadyCallback, Vie
         stopLocation = place.getLatLng();
         mMap.addMarker(new MarkerOptions().position(place.getLatLng()));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+        txtName.setText(place.getName());
     }
 
     @Override

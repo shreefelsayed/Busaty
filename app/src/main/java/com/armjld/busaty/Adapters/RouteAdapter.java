@@ -18,6 +18,7 @@ import com.armjld.busaty.Utill.BitMapMaker;
 import java.util.ArrayList;
 
 import Models.Routes;
+import Models.Stops;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder> implements Filterable {
@@ -25,11 +26,17 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
     Context mContext;
     ArrayList<Routes> listRoutes;
     ArrayList<Routes> mDisplayedValues;
+    AdapterCallback callback;
 
-    public RouteAdapter(Context mContext, ArrayList<Routes> listRoutes) {
+    public interface AdapterCallback{
+        void onItemClicked(Routes routes);
+    }
+
+    public RouteAdapter(Context mContext, ArrayList<Routes> listRoutes, AdapterCallback callback) {
         this.mContext = mContext;
         this.listRoutes = listRoutes;
         this.mDisplayedValues = listRoutes;
+        this.callback = callback;
     }
 
     @NonNull
@@ -45,6 +52,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Routes routes = mDisplayedValues.get(position);
         holder.setData(routes);
+
+        holder.myview.setOnClickListener(v -> {
+            if(callback != null) {
+                callback.onItemClicked(routes);
+            }
+        });
     }
 
     @Override
@@ -63,7 +76,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
         public View myview;
         TextView txtFrom, txtTo;
         CircleImageView imgCode;
-        TextView txtStops,txtMoney;
+        TextView txtStops,txtMoney, txtCode;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +87,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
             imgCode = myview.findViewById(R.id.imgCode);
             txtStops = myview.findViewById(R.id.txtStops);
             txtMoney = myview.findViewById(R.id.txtMoney);
+            txtCode = myview.findViewById(R.id.txtCode);
         }
 
         @SuppressLint("SetTextI18n")
@@ -81,7 +95,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
             BitMapMaker bitMapMaker = new BitMapMaker();
             imgCode.setImageBitmap(bitMapMaker.createImageRounded(mContext,150, 150, routes.getCode()));
             txtMoney.setText("سعر التذكره : " + routes.getFees() + " جنية");
-
+            txtCode.setText(routes.getCode());
             if(routes.getListStops().size() == 0) return;
             txtFrom.setText(routes.getListStops().get(0).getName());
             txtTo.setText(routes.getListStops().get(routes.getListStops().size() - 1).getName());
