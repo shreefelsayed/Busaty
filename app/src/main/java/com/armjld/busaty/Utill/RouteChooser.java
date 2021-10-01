@@ -52,6 +52,7 @@ public class RouteChooser {
         Log.i(TAG, "Nearest PickUp : " + stopsPick.getName() + " Nearest Drop : " + stopsDrop.getName());
 
         if(indexPick > indexDrop) {
+            routes.setDir("reverse");
             Collections.reverse(routes.getListStops());
             Log.i(TAG, "List Reversed");
             return "reverse";

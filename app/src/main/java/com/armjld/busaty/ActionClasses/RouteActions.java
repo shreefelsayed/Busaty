@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 
 import com.armjld.busaty.Adapters.RouteAdapter;
 import com.armjld.busaty.Utill.RouteData;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,6 +23,7 @@ import java.util.Objects;
 
 import Models.Routes;
 import Models.Stops;
+import es.dmoral.toasty.Toasty;
 
 public class RouteActions {
 
@@ -84,5 +86,10 @@ public class RouteActions {
             @Override
             public void onCancelled(@NonNull DatabaseError error) { }
         });
+    }
+
+    public void updateRoute(LatLng point, Routes routes) {
+        rDatabase.child(routes.getCode()).child("listOne").push().setValue(point);
+        Toasty.success(mContext, "Added a new point on route", Toasty.LENGTH_LONG, true).show();
     }
 }

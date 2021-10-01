@@ -1,5 +1,6 @@
 package Models;
 
+import com.armjld.busaty.Utill.Converter;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class Routes {
     String date = "";
     String by = "";
     int fees = 0;
+    String dir = "normal";
 
     ArrayList<String> listStopsCode = new ArrayList<>();
     ArrayList<Stops> listStops = new ArrayList<>();
@@ -47,8 +49,29 @@ public class Routes {
         this.listTwo = listTwo;
     }
 
+    public String getDir() {
+        return dir;
+    }
+
+    public void setDir(String dir) {
+        this.dir = dir;
+    }
+
     public ArrayList<String> getListStopsCode() {
         return listStopsCode;
+    }
+
+    public ArrayList<LatLng> getWayPoints() {
+        if(getListOne().size() != 0 && getDir().equals("normal")) {
+            return getListOne();
+        }
+
+        if(getListTwo().size() != 0  && getDir().equals("reverse")) {
+            return getListTwo();
+        }
+
+        Converter converter = new Converter();
+        return converter.convert(getListStops());
     }
 
     public void setListStopsCode(ArrayList<String> listStopsCode) {

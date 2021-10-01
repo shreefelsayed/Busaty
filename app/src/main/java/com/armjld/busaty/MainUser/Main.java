@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -31,6 +32,8 @@ import com.armjld.busaty.ActionClasses.PermisionActions;
 import com.armjld.busaty.Adapters.RouteAdapter;
 import com.armjld.busaty.Admin.AdminRoutes.NewRoute;
 import com.armjld.busaty.R;
+import com.armjld.busaty.SplashScreen;
+import com.armjld.busaty.Utill.GetLocation;
 import com.armjld.busaty.Utill.RouteFinder;
 import com.armjld.busaty.Utill.RouteMaker;
 import com.armjld.busaty.Utill.UserRouteMaker;
@@ -59,6 +62,8 @@ import java.util.stream.Collectors;
 
 import Models.Routes;
 import Models.Stops;
+import at.markushi.ui.CircleButton;
+import dev.shreyaspatil.MaterialDialog.MaterialDialog;
 import es.dmoral.toasty.Toasty;
 
 public class Main extends Fragment implements OnMapReadyCallback, View.OnClickListener, GoogleMap.OnInfoWindowClickListener, GoogleApiClient.ConnectionCallbacks,
@@ -71,6 +76,7 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
     public void onCreate(Bundle savedInstanceState) { super.onCreate(savedInstanceState); }
 
     GoogleMap mMap;
+    GetLocation getLocation;
     FusedLocationProviderClient fusedLocationProviderClient;
     GoogleApiClient mGoogleApiClient;
     Geocoder geocoder;
@@ -78,6 +84,7 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
     Context mContext;
 
     LatLng myLocation, dropLocation;
+    Routes routes;
 
     PermisionActions permisionActions;
 
@@ -85,12 +92,15 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
     RecyclerView recycler;
     RouteAdapter routeAdapter;
 
+    CircleButton btnLearn;
+
     @SuppressLint("PotentialBehaviorOverride")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         recycler = view.findViewById(R.id.recycler);
+        btnLearn = view.findViewById(R.id.btnLearn);
         pickUpAutoComplete = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.pickUpAutoComplete);
         dropAutoComplete = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.dropAutoComplete);
         pickUpAutoComplete.getView().setBackgroundResource(R.drawable.layout_rounded_corner);
@@ -119,7 +129,45 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
         mapFragment.getMapAsync(this);
 
         fetchLocation();
+
+        btnLearn.setOnClickListener(v-> {
+            MaterialDialog materialDialog = new MaterialDialog.Builder((Activity) mContext).setTitle("مشاركه خط السير").setMessage("هل تريد مساعدتنا علي مشاركه خط سير الاوتوبيس رقم " + routes.getCode()).setCancelable(true).setPositiveButton("نعم", (dialogInterface, which) -> {
+                record();
+                dialogInterface.dismiss();
+            }).setNegativeButton("لاحقا", (dialogInterface, which) -> dialogInterface.dismiss()).build();
+            materialDialog.show();
+        });
+
+        viewButton();
+
         return view;
+    }
+
+    private void viewButton() {
+        if(getLocation == null) return;
+        if(getLocation.isRecording()) {
+            btnLearn.setColor(Color.GREEN);
+        } else {
+            btnLearn.setColor(Color.YELLOW);
+        }
+    }
+
+    private void record() {
+        if(routes != null) {
+            if(getLocation == null) {
+                getLocation = new GetLocation(mContext, routes, btnLearn);
+                getLocation.startRecoring();
+
+            } else {
+                if(getLocation.isRecording()) {
+                    getLocation.destroyListener();
+                } else {
+                    getLocation.startRecoring();
+                }
+            }
+        } else {
+            Toast.makeText(mContext, "Route is null", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setListners() {
@@ -148,6 +196,7 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
 
     private void updateUI(ArrayList<Routes> nearestRoutes) {
         if(nearestRoutes.size() > 0) {
+            routes = nearestRoutes.get(0);
             UserRouteMaker userRouteMaker = new UserRouteMaker(mMap, mContext, nearestRoutes.get(0), myLocation, dropLocation);
             userRouteMaker.setRoute();
 
@@ -155,6 +204,7 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
                 routeAdapter = new RouteAdapter(mContext, nearestRoutes, this);
                 recycler.setVisibility(View.VISIBLE);
                 recycler.setAdapter(routeAdapter);
+                btnLearn.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -162,7 +212,7 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
     @Override
     public void onResume() {
         super.onResume();
-        permisionActions.GPS();
+        //permisionActions.GPS();
         buildGoogleAPIClient();
     }
 
@@ -200,7 +250,8 @@ public class Main extends Fragment implements OnMapReadyCallback, View.OnClickLi
 
         mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
-            public void onMarkerDragStart(@NonNull Marker marker) { }
+            public void onMarkerDragStart(@NonNull Marker marker) {
+            }
 
             @Override
             public void onMarkerDrag(@NonNull Marker marker) { }

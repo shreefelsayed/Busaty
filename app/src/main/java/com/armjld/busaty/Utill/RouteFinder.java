@@ -1,6 +1,7 @@
 package com.armjld.busaty.Utill;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
@@ -21,6 +22,12 @@ public class RouteFinder {
 
         if(from == null || to == null) return finalRoutes;
 
+        if(allRoutes.size() == 0) {
+            Log.i("RouteFinder", "Main List is NULL !");
+
+            return finalRoutes;
+        }
+
         for (int i = 0; i < allRoutes.size(); i ++) {
             Routes routes = allRoutes.get(i);
 
@@ -37,15 +44,24 @@ public class RouteFinder {
             routes.setDisDrop(dropPointDis);
             routes.setDisPick(pickPointDis);
 
+            Log.i("RouteFinder", "Seted Route Data");
             finalRoutes.add(routes);
         }
 
         Collections.sort(finalRoutes, (c1, c2) -> Double.compare((c1.getDisDrop() + c1.getDisPick()), (c2.getDisDrop() + c2.getDisPick())));
 
         ArrayList<Routes> listFinal = new ArrayList<>();
-        for(int i = 0; i < 3; i++) {
-            listFinal.add(finalRoutes.get(i));
+        Log.i("RouteFinder", "finalRoute size : " + finalRoutes.size());
+
+        if(finalRoutes.size() != 0) {
+
+            for(int i = 0; i < 3; i++) {
+                listFinal.add(finalRoutes.get(i));
+            }
         }
+
+        Log.i("RouteFinder", "listFinal size : " + listFinal.size());
+
         return listFinal;
     }
 

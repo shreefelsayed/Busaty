@@ -2,6 +2,7 @@ package com.armjld.busaty.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,15 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
 
     public interface AdapterCallback{
         void onItemClicked(Routes routes);
+    }
+
+    public ArrayList<Routes> getListRoutes() {
+        return listRoutes;
+    }
+
+    public void setListRoutes(ArrayList<Routes> listRoutes) {
+        this.listRoutes = listRoutes;
+        Log.i("RoutesAdapter", "List Updated");
     }
 
     public RouteAdapter(Context mContext, ArrayList<Routes> listRoutes, AdapterCallback callback) {

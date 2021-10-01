@@ -2,27 +2,13 @@ package com.armjld.busaty.Utill;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import androidx.core.content.ContextCompat;
-
 import com.armjld.busaty.R;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 import Models.Routes;
-import Models.Stops;
 
 public class RouteData {
     Routes routes;
@@ -47,45 +32,46 @@ public class RouteData {
     }
 
     public void setRoute() {
-        if(routes.getListStops().size() > 1) {
-            String url = makeURL(routes.getListStops());
+        if(routes.getWayPoints().size() > 1) {
+            String url = makeURL(routes.getWayPoints());
             DownloadTask downloadTask = new DownloadTask();
             downloadTask.execute(url);
         }
     }
 
-    private String makeURL (ArrayList<Stops> points){
+    private String makeURL (ArrayList<LatLng> points){
         StringBuilder urlString = new StringBuilder();
+
 
         urlString.append("https://maps.googleapis.com/maps/api/directions/json?");
         urlString.append("origin=");// from
-        urlString.append(points.get(0).getLat());
+        urlString.append(points.get(0).latitude);
         urlString.append(',');
-        urlString.append(points.get(0).get_long());
+        urlString.append(points.get(0).longitude);
 
         urlString.append("&destination=");
-        urlString.append(points.get(points.size()-1).getLat());
+        urlString.append(points.get(points.size()-1).latitude);
         urlString.append(',');
-        urlString.append(points.get(points.size()-1).get_long());
+        urlString.append(points.get(points.size()-1).longitude);
 
         // -- Add Way Points
         if(points.size() > 2) {
             urlString.append("&waypoints=");
             urlString.append("optimize:true|");
-            urlString.append( points.get(1).getLat());
+            urlString.append( points.get(1).latitude);
             urlString.append(',');
-            urlString.append(points.get(1).get_long());
+            urlString.append(points.get(1).longitude);
 
             for(int i=2;i<points.size()-1;i++) {
                 urlString.append('|');
-                urlString.append( points.get(i).getLat());
+                urlString.append( points.get(i).latitude);
                 urlString.append(',');
-                urlString.append(points.get(i).get_long());
+                urlString.append(points.get(i).longitude);
             }
         }
 
         urlString.append("&sensor=false&mode=driving");
-        urlString.append("&key=" + mContext.getResources().getString(R.string.google_maps_key));
+        urlString.append("&key=").append(mContext.getResources().getString(R.string.google_maps_key));
 
         return urlString.toString();
     }
@@ -162,21 +148,7 @@ public class RouteData {
 
             if(lineOptions != null) {
                 routes.setListPoints(lineOptions.getPoints());
-            } else {
-                Log.i("Route", "Draw Line : Line options are null");
             }
-        }
-
-        private void fitPoly(PolylineOptions lineOptions) {
-            
-        }
-
-        private LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
-            final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
-            for (LatLng point : polygon) {
-                centerBuilder.include(point);
-            }
-            return centerBuilder.build();
         }
     }
 
@@ -216,15 +188,5 @@ public class RouteData {
             urlConnection.disconnect();
         }
         return data;
-    }
-
-    private BitmapDescriptor bitmapDescriptorFromVector() {
-        Drawable vectorDrawable = ContextCompat.getDrawable(mContext, R.drawable.ic_bus_stop);
-        assert vectorDrawable != null;
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 }

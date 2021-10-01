@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.armjld.busaty.R;
@@ -18,15 +17,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Dash;
 import com.google.android.gms.maps.model.Dot;
 import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PatternItem;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -39,8 +35,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -74,20 +68,6 @@ public class UserRouteMaker {
             DownloadTask downloadTask = new DownloadTask();
             downloadTask.execute(url);
         }
-
-        mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
-            @Override
-            public void onMarkerDragStart(@NonNull Marker marker) { }
-
-            @Override
-            public void onMarkerDrag(@NonNull Marker marker) { }
-
-            @Override
-            public void onMarkerDragEnd(@NonNull Marker marker) {
-
-            }
-        });
-
         setPoints();
     }
 
@@ -104,23 +84,17 @@ public class UserRouteMaker {
     }
 
     private String makePickURL(LatLng from, LatLng to) {
-        StringBuilder urlString = new StringBuilder();
-
-        urlString.append("https://maps.googleapis.com/maps/api/directions/json?");
-        urlString.append("origin=");// from
-        urlString.append(from.latitude);
-        urlString.append(',');
-        urlString.append(from.longitude);
-
-        urlString.append("&destination=");
-        urlString.append(to.latitude);
-        urlString.append(',');
-        urlString.append(to.longitude);
-
-        urlString.append("&sensor=false&mode=walking");
-        urlString.append("&key=" + mContext.getResources().getString(R.string.google_maps_key));
-
-        return urlString.toString();
+        return "https://maps.googleapis.com/maps/api/directions/json?" +
+                "origin=" +// from
+                from.latitude +
+                ',' +
+                from.longitude +
+                "&destination=" +
+                to.latitude +
+                ',' +
+                to.longitude +
+                "&sensor=false&mode=walking" +
+                "&key=" + mContext.getResources().getString(R.string.google_maps_key);
     }
 
     private void setPoints() {
@@ -135,7 +109,6 @@ public class UserRouteMaker {
 
     private String makeURL (ArrayList<Stops> points){
         StringBuilder urlString = new StringBuilder();
-
         urlString.append("https://maps.googleapis.com/maps/api/directions/json?");
         urlString.append("origin=");// from
         urlString.append(points.get(0).getLat());
@@ -163,8 +136,8 @@ public class UserRouteMaker {
             }
         }
 
-        urlString.append("&sensor=false&mode=driving");
-        urlString.append("&key=" + mContext.getResources().getString(R.string.google_maps_key));
+        urlString.append("&sensor=false&mode=driving"); // mode is driving
+        urlString.append("&key=").append(mContext.getResources().getString(R.string.google_maps_key));
 
         return urlString.toString();
     }
@@ -214,7 +187,7 @@ public class UserRouteMaker {
         @SuppressLint("LogNotTimber")
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList<LatLng> points = null;
+            ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
 
             for (int i = 0; i < result.size(); i++) {
@@ -236,28 +209,12 @@ public class UserRouteMaker {
             }
 
             if(lineOptions != null) {
-
-                int posPick = getIndexes(lineOptions.getPoints())[0];
-                int posDrop = getIndexes(lineOptions.getPoints())[1];
-
-                if(posDrop < posPick) {
-                    Collections.reverse(routes.getListStops());
-                    Collections.reverse(lineOptions.getPoints());
-
-                    if(points != null) Collections.reverse(points);
-
-                    Log.i("User Routes", "List Reversed");
-                }
-
                 nearestPick = routeFinder.findNearestPoint(pickUp, lineOptions.getPoints());
                 nearestDrop = routeFinder.findNearestPoint(drop, lineOptions.getPoints());
 
                 setPolyLinesOnMap(lineOptions.getPoints());
                 fitPoly(lineOptions);
 
-                Log.i("Route", "Route Drawed");
-            } else {
-                Log.i("Route", "Draw Line : Line options are null");
             }
         }
 
@@ -271,8 +228,8 @@ public class UserRouteMaker {
         }
 
         private void setActionPoints() {
-            mMap.addMarker(new MarkerOptions().position(pickUp).icon(bitmapDescriptorFromVector(R.drawable.ic_my_location)).draggable(true).flat(true)).setTag("pick");
-            mMap.addMarker(new MarkerOptions().position(drop).icon(bitmapDescriptorFromVector(R.drawable.ic_pin)).draggable(true).flat(true)).setTag("drop");
+            mMap.addMarker(new MarkerOptions().position(pickUp).icon(bitmapDescriptorFromVector(R.drawable.ic_my_location)).draggable(true)).setTag("pick");
+            mMap.addMarker(new MarkerOptions().position(drop).icon(bitmapDescriptorFromVector(R.drawable.ic_pin)).draggable(true)).setTag("drop");
 
             mMap.addMarker(new MarkerOptions().position(nearestPick).icon(bitmapDescriptorFromVector(R.drawable.ic_placeholder)).draggable(false).flat(true));
             mMap.addMarker(new MarkerOptions().position(nearestDrop).icon(bitmapDescriptorFromVector(R.drawable.ic_placeholder)).draggable(false).flat(true));
@@ -292,22 +249,14 @@ public class UserRouteMaker {
                     posPick = i;
                 }
             }
-
-            Log.i("UserRoute", "Points List Size : " + points.size() + "Pick Up Point : " + posPick + " Drop Point : " + posDrop);
             return new int[]{posPick, posDrop};
-        }
-
-        private boolean checkForReverse(List<LatLng> points) {
-
-
-            return false;
         }
 
         private PolylineOptions getToPickUp(List<LatLng> points) {
             PolylineOptions lineOptions = new PolylineOptions();
 
             ArrayList<LatLng> finalPoint = new ArrayList<>(points.subList(0, getIndexes(points)[0]));
-            
+
             lineOptions.addAll(finalPoint);
             lineOptions.width(12);
             lineOptions.color(Color.parseColor("#000000"));
@@ -338,9 +287,10 @@ public class UserRouteMaker {
         }
 
         private void fitPoly(PolylineOptions lineOptions) {
-            final int POLYGON_PADDING_PREFERENCE = 200;
-            final LatLngBounds latLngBounds = getPolygonLatLngBounds(lineOptions.getPoints());
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, POLYGON_PADDING_PREFERENCE));
+            final int POLYGON_PADDING_PREFERENCE = 150;
+            //final LatLngBounds latLngBounds = getPolygonLatLngBounds(lineOptions.getPoints());
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(getPickUpBounds(), POLYGON_PADDING_PREFERENCE));
         }
 
         private LatLngBounds getPolygonLatLngBounds(final List<LatLng> polygon) {
@@ -348,6 +298,13 @@ public class UserRouteMaker {
             for (LatLng point : polygon) {
                 centerBuilder.include(point);
             }
+            return centerBuilder.build();
+        }
+
+        private LatLngBounds getPickUpBounds() {
+            final LatLngBounds.Builder centerBuilder = LatLngBounds.builder();
+            centerBuilder.include(pickUp);
+            centerBuilder.include(nearestPick);
             return centerBuilder.build();
         }
     }
@@ -460,9 +417,6 @@ public class UserRouteMaker {
                 lineOptions.color(Color.parseColor("#000000"));
                 List<PatternItem> patternItems = Arrays.asList(new Dot(), new Gap(20));
                 mMap.addPolyline(lineOptions).setPattern(patternItems);
-                Log.i("Routes", "Set the PickUp PolyLine");
-            } else {
-                Log.i("Route", "Draw Line : Line options are null");
             }
         }
     }
