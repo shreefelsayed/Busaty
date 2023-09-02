@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +62,10 @@ public class ReciveOTPScreen extends AppCompatActivity {
 
         txtCode.setOtpCompletionListener(otp -> verifyPhoneNumberWithCode(mVerificationId, otp));
 
+        txtTitle.setOnClickListener(v-> {
+            verifyPhoneNumberWithCode(mVerificationId, txtCode.getMaskingChar());
+        });
+
         UpdateUI();
     }
 
@@ -84,6 +90,7 @@ public class ReciveOTPScreen extends AppCompatActivity {
                         .setActivity(this)
                         .setCallbacks(mCallbacks)
                         .build();
+
         PhoneAuthProvider.verifyPhoneNumber(options);
     }
 
@@ -163,6 +170,7 @@ public class ReciveOTPScreen extends AppCompatActivity {
                 super.onCodeSent(verificationId, token);
                 Toasty.success(ReciveOTPScreen.this, "تم ارسال الرساله", Toast.LENGTH_SHORT, true).show();
                 mDialog.dismiss();
+                Toast.makeText(ReciveOTPScreen.this, " Verf code = " + verificationId, Toast.LENGTH_SHORT).show();
                 mVerificationId = verificationId;
             }
         };
